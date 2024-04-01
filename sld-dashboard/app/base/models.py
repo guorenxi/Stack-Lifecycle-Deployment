@@ -1,26 +1,26 @@
 # -*- encoding: utf-8 -*-
 
-from app import db, login_manager
 import datetime
-import bcrypt
+
+from app import db, login_manager
 from flask_login import UserMixin
-from sqlalchemy import Binary, Column, Integer, String, JSON
 from passlib.context import CryptContext
+from sqlalchemy import JSON
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class User(db.Model, UserMixin):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True, index=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     fullname = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    master = db.Column(db.Boolean, unique=False)
-    privilege = db.Column(db.Boolean, unique=False)
+    role = db.Column(JSON, nullable=False)
+    squad = db.Column(JSON, nullable=False)
     is_active = db.Column(db.Boolean(), default=True)
-    squad = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
     updated_at = db.Column(db.DateTime)
     stacks = db.relationship("Stack", back_populates="owner")
@@ -67,7 +67,7 @@ def user_loader(id):
 
 @login_manager.request_loader
 def request_loader(request):
-    username = request.form.get('username')
+    username = request.form.get("username")
     user = User.query.filter_by(username=username).first()
     return user if user else None
 
@@ -83,7 +83,7 @@ class Stack(db.Model):
     var_list = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
     description = db.Column(db.Text())
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     owner = db.relationship("User", back_populates="stacks")
 
     @property
@@ -94,11 +94,7 @@ class Stack(db.Model):
 
     @classmethod
     def create_element(cls, name, git, description, user_id):
-        stack = Stack(
-            name=name,
-            git=git,
-            description=description,
-            user_id=user_id)
+        stack = Stack(name=name, git=git, description=description, user_id=user_id)
 
         db.session.add(stack)
         db.session.commit()
@@ -147,7 +143,7 @@ class Aws_provider(db.Model):
     secret_access_key = db.Column(db.String(200), nullable=False)
     default_region = db.Column(db.String(200))
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
-    __table_args__ = (db.UniqueConstraint('squad', 'environment'),)
+    __table_args__ = (db.UniqueConstraint("squad", "environment"),)
 
 
 class Gcloud_provider(db.Model):
@@ -157,7 +153,7 @@ class Gcloud_provider(db.Model):
     squad = db.Column(db.String(200), nullable=False)
     gcloud_keyfile_json = db.Column(db.String(5000), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
-    __table_args__ = (db.UniqueConstraint('squad', 'environment'),)
+    __table_args__ = (db.UniqueConstraint("squad", "environment"),)
 
 
 class Azure_provider(db.Model):
@@ -170,7 +166,7 @@ class Azure_provider(db.Model):
     subscription_id = db.Column(db.String(200), nullable=False)
     tenant_id = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
-    __table_args__ = (db.UniqueConstraint('squad', 'environment'),)
+    __table_args__ = (db.UniqueConstraint("squad", "environment"),)
 
 
 class Deploy(db.Model):
@@ -185,8 +181,9 @@ class Deploy(db.Model):
     squad = db.Column(db.String(50), nullable=False)
     variables = db.Column(db.JSON)
     environment = db.Column(db.String(50))
-    __table_args__ = (db.UniqueConstraint(
-        'squad', 'environment', 'name', 'stack_name'),)
+    __table_args__ = (
+        db.UniqueConstraint("squad", "environment", "name", "stack_name"),
+    )
 
 
 class Tasks(db.Model):
@@ -196,6 +193,6 @@ class Tasks(db.Model):
     user_id = db.Column(db.Integer)
     deploy_id = db.Column(db.Integer)
     username = db.Column(db.String(50), nullable=False)
-    squad = db.Column(db.String(50), nullable=False)
+    squad = db.Column(JSON, nullable=False)
     action = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())

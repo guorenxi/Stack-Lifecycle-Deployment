@@ -1,4 +1,6 @@
 import ast
+import json
+
 
 def convert_to_dict(data):
     result = []
@@ -16,3 +18,10 @@ def convert_to_dict(data):
     if not len(result):
         return data
     return result[0]
+
+def trim_dict(valor):
+    try:
+        obj = json.loads(valor)
+        return json.dumps(obj)
+    except json.JSONDecodeError:
+        return valor

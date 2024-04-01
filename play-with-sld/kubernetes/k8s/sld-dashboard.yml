@@ -17,15 +17,10 @@ spec:
       subdomain: primary
       containers:
         - name: sld-dashboard
-          image: d10s0vsky/sld-dashboard:latest
-          resources:
-            limits:
-              memory: 600Mi
-              cpu: 1
-            requests:
-              memory: 300Mi
-              cpu: 500m
+          image: d10s0vsky/sld-dashboard:v3.6.2
           env:
+          - name: PATH
+            value: "/home/sld/.asdf/shims:/home/sld/.asdf/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
           - name: DEBUG
             value: "True"
           - name: SECRET_KEY
@@ -39,8 +34,6 @@ spec:
             value: "restapi"
           - name: DB_HOST
             value: "db"
-          - name: DB_NAME
-            value: "restapi"
           - name: DB_PORT
             value: "3306"
           - name: DB_USERNAME
@@ -51,6 +44,6 @@ spec:
                 name: db
                 key: password
           imagePullPolicy: Always
-          command: ["gunicorn", "--config", "gunicorn-cfg.py", "run:app"]
+          command: ["python", "-m", "gunicorn", "--config", "gunicorn-cfg.py", "run:app"]
           ports:
             - containerPort: 5000

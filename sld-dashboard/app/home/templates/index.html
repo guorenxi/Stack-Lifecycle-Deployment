@@ -52,16 +52,23 @@
                     </div>
                     <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
                         <li class="nav-item mr-2">
-                            <a href="/dashboard" class="nav-link">Dashboard</a>
+                        <strong>
+                            <a href="/dashboard" class="nav-link" style="font-size: 1.2em;">Dashboard</a>
+                        </strong>
                         </li>
                         <li class="nav-item mr-2">
-                            <a href="/stacks-list" class="nav-link">Stacks</a>
+                        <strong>
+                            <a href="/stacks-list" class="nav-link" style="font-size: 1.2em;">Stacks</a>
+                        </strong>
                         </li>
                         <li class="nav-item mr-2">
-                            <a href="/deploys-list" class="nav-link">Deploy</a>
+                        <strong>
+                            <a href="/deploys-list" class="nav-link" style="font-size: 1.2em;">Deploy</a>
+                        </strong>
                         </li>
                     </ul>
                 </div>
+
                 <div class="d-flex align-items-center ml-auto">
                     <a href="{{external_api_dns}}" target="_blank" class="btn btn-secondary text-dark mr-md-3">
                         <span class="fas fa-cubes mr-2"></span>
@@ -79,21 +86,17 @@
         </nav>
 
     </header>
+    
 
     <main>
 
-        <div class="preloader bg-soft flex-column justify-content-center align-items-center">
-            <img class="loader-element animate__animated animate__jackInTheBox" src="/static/assets/img/brand/light.svg"
-                height="60" alt="stack_logo">
-        </div>
-
         <!-- Hero -->
-        <section class="section-header pb-9 pb-lg-12 bg-primary text-white">
-            <div class="container">
-                <div class="row">
+        <section id="particles-js" class="section-header  text-white">
                     <div class="col-12 text-center">
-                        <img class="navbar-brand-dark mb-4" src="/static/assets/img/brand/light.svg" height="120"
-                            alt="Logo light">
+                        <i class="fas fa-layer-group navbar-brand-dark mb-1" style="font-size: 8rem; background: linear-gradient(99deg, #7f1f99, #fa5252, #3300ff); -webkit-background-clip: text; color: transparent;"></i>
+
+
+
                         <h1 class="display-1">Stack Lifecycle Deployment </h1>
                         <div class="mb-5">
                             <h2 class="h4 text-muted mr-4">Defines and manages the complete lifecycle of resources used
@@ -106,30 +109,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <figure class="position-absolute bottom-0 left-0 w-100 d-none d-md-block mb-n2"><svg class="fill-white"
-                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3000 185.4">
-                    <path d="M3000,0v185.4H0V0c496.4,115.6,996.4,173.4,1500,173.4S2503.6,115.6,3000,0z"></path>
-                </svg></figure>
-        </section>
-        <div class="section pt-0">
-            <div class="container mt-n10 mt-lg-n12 z-2">
-                <div class="row justify-content-center">
-                    <div class="col-12">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <section class="section section-sm pt-0">
-            <div class="container">
-                <div class="row justify-content-center mb-5 mb-lg-6">
-                </div>
-                <div class="row mb-5">
-                </div>
-        </section>
         </section>
     </main>
-    {% include 'includes/scripts.html' %}
 </body>
+<script src="/static/assets/js/particles.js"></script>
+<script src="/static/assets/js/app.js"></script>
 
 </html>

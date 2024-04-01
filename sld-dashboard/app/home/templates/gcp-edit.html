@@ -1,0 +1,149 @@
+{% extends "layouts/base.html" %}
+
+{% from "helpers/_forms.html" import render_field %}
+
+{% block title %} New GCP Account {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+{% block content %}
+<main class="content">
+
+    {% include 'includes/navigation.html' %}
+    <div class="preloader bg-soft flex-column justify-content-center align-items-center">
+        <img class="loader-element animate__animated animate__jackInTheBox" src="/static/assets/img/brand/light.svg"
+            height="90" alt="Volt logo">
+    </div>
+
+    <div class="py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item"><a href="/gcp-list">Accounts</a></li>
+                <li class="breadcrumb-item"><a href="/gcp-list">GCP</a></li>
+                <li class="breadcrumb-item active" aria-current="page">New</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="h4">Edit GCP Account</h1>
+                <p class="mb-0">Edit account by squad and environment</p>
+            </div>
+            <div>
+                <a href="" class="btn btn-outline-gray"><i class="far fa-question-circle mr-1"></i> Accounts Docs</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card border-light shadow-sm components-section">
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-lg-4 col-sm-6">
+                            <!-- Form -->
+                            <div class="col-md-12 col-md-offset-1">
+                                <form class="" method="post">
+                                    <div class="form-group">
+                                        {{ render_field(form.squad, class='form-control', value=data_json.squad) }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ render_field(form.environment, class='form-control', value=data_json.environment) }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ render_field(form.gcloud_keyfile_json, class='form-control',value="{}", placeholder='Paste gcp json key') }}
+                                    </div>
+
+<!-- START Extra variables -->
+<div class="border-top my-4"></div>
+<div class="row">
+    <div class="col-lg-12">
+        <div id="inputFormRow">
+            <!-- Iterar sobre las variables existentes -->
+            {% if data_json.extra_variables %}
+                {% for key, value in data_json.extra_variables.items() %}
+                    <div class="input-group col-sm-8 mb-3 dynamic-row">
+                        <div class="col-sm-8 mb-2">
+                            <input type="text" name="sld_key" class="form-control m-input" value="{{ key }}" placeholder="Enter variable name" autocomplete="off" {% if data_json.extra_variables.get(key) %} readonly {% endif %}>
+                        </div>
+                        <div class="col-sm-8 mb-4">
+                            <input type="text" name="sld_value" class="form-control m-input" value="{{ value }}" placeholder="Enter variable value" autocomplete="off">
+                        </div>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-danger btn-sm ml-2 removeRow">Remove</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div id="newRow"></div>
+        <button id="addRow" type="button" class="btn btn-info btn-sm" title="Add extra secrets variables like TF_VAR_secreto: mySecret">Add Extra Variable</button>
+    </div>
+</div>
+<div class="border-top my-4"></div>
+<!-- END Extra variables -->
+
+                                    <button type="submit" class="btn btn-primary" name="button">
+                                        Update Account
+                                    </button>
+                                    <button type="button" class="btn btn-danger" id="cancelButton">
+                                        Exit         
+                                    </button>
+                                </form>
+                                <!-- End Form -->
+
+                                <div class="input-group">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% include 'includes/footer.html' %}
+
+</main>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script type="text/javascript">
+    // add row
+    $("#addRow").click(function () {
+        var html = '<div class="row">';
+        html += '<div class="input-group col-sm-8 mb-3 dynamic-row">';
+        html += '<div class="col-sm-8 mb-2">';
+        html += '<input type="text" name="sld_key" class="form-control m-input" placeholder="Enter variable name" autocomplete="off">';
+        html += '</div>';
+        html += '<div class="col-sm-8 mb-4">';
+        html += '<input type="text" name="sld_value" class="form-control m-input" placeholder="Enter variable value" autocomplete="off">';
+        html += '</div>';
+        html += '<div class="input-group-append">';
+        html += '<button type="button" class="btn btn-danger btn-sm ml-2 removeRow">Remove</button>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#newRow').append(html);
+    });
+
+    // remove row
+    $(document).on('click', '.removeRow', function () {
+        if ($('.dynamic-row').length > 1) {
+            $(this).closest('.dynamic-row').remove();
+        } else {
+            $(this).closest('.dynamic-row').find('input[type="text"]').val('');
+        }
+    });
+</script>
+
+<script type="text/javascript">
+    document.getElementById('cancelButton').addEventListener('click', function() {
+        // Redirect to /gcp-list when the cancel button is clicked
+        window.location.href = '/gcp-list';
+    });
+</script>
+
+{% endblock javascripts %}

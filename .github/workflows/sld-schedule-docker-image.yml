@@ -4,8 +4,6 @@ on:
   # Triggers the workflow on push events but only for the main branch
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -13,7 +11,7 @@ jobs:
 
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v2
@@ -26,15 +24,17 @@ jobs:
 
     - name: Build the Docker image with tags
       working-directory: ./sld-schedule
-      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/sld-schedule:1.4.4
+      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/sld-schedule:2.7.0
       
     - name: Docker Push with tags
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/sld-schedule:1.4.4
+      #if: github.event.pull_request.merged == true
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/sld-schedule:2.7.0
 
     - name: Build the Docker image
       working-directory: ./sld-schedule
       run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/sld-schedule:latest
       
     - name: Docker Push
+      #if: github.event.pull_request.merged == true
       run: docker push ${{ secrets.DOCKER_USERNAME }}/sld-schedule:latest
 

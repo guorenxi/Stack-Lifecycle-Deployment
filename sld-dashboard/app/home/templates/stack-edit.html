@@ -55,14 +55,42 @@
                                     </div>
 
                                     <div class="form-group">
-                                        {{ render_field(form.tf_version, autocomplete="off", class='form-control', value=stack.tf_version) }}
+                                        {{ render_field(form.iac_type, id='iacTypeSelector',autocomplete="off", class='form-control', value=stack.iac_type) }}
                                     </div>
 
                                     <div class="form-group">
-                                        {{ render_field(form.description_edit, autocomplete="off", class='form-control',value=stack.description) }}
+                                        {{ render_field(form.tf_version, id='versionSelector',autocomplete="off", class='form-control', value=stack.tf_version) }}
                                     </div>
 
-                                    <input class="btn btn-primary" type="submit" name="stackButton" value="Update Stack">
+                                    <div class="form-group">
+                                        {{ render_field(form.project_path, autocomplete="off", class='form-control', value=stack.project_path) }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ render_field(form.description, autocomplete="off", class='form-control',value=stack.description) }}
+                                    </div>
+
+<div class="form-group">
+    <label for="iconSelector">Choose an Icon:</label>
+    <select id="iconSelector" name="icon_path" class="form-control" onchange="previewIcon()">
+        {% for category, icons in icons.items() %}
+            {% for icon in icons %}
+                {% set fullIconPath = '/static/assets/img/gallery/' ~ category ~ '/' ~ icon %}
+                <option value="{{ fullIconPath }}" {% if fullIconPath == stack.icon_path %} selected {% endif %}>
+                    {{ category }}/{{ icon }}
+                </option>
+            {% endfor %}
+        {% endfor %}
+    </select>
+    <div id="iconPreview" class="mt-2">
+        <!-- Icon preview will be displayed here -->
+    </div>
+</div>
+<form class="" id="stackForm" method="post" onsubmit="return checkForm(this);">
+    <input type="hidden" id="preferredView" name="preferredView">
+    <input class="btn btn-primary" type="submit" name="stackButton" value="Update Stack">
+</form>
+
 
                                 </form>
                             </div>
@@ -84,14 +112,93 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <script type="text/javascript">
+    function checkForm(form) {
+        form.stackButton.disabled = true;
+        form.stackButton.value = "Please wait...";
+        document.getElementById('preferredView').value = localStorage.getItem('preferredView');
+        return true;
+    }
+</script>
 
-    function checkForm(form) // Submit button clicked
-{
+<script type="text/javascript">
+    // This script is for populating and previewing icons.
+    // Make sure the corresponding elements and event handlers are defined in your HTML.
+    document.addEventListener('DOMContentLoaded', function () {
+        var iconsBasePath = '/static/assets/img/gallery/';
+        var iconsData = {{ icons | safe }};
+        var selector = document.getElementById('iconSelector');
+        var preview = document.getElementById('iconPreview');
 
-    form.stackButton.disabled = true;
-    form.stackButton.value = "Please wait...";
-    return true;
-}
+        // Function to preview selected icon
+        window.previewIcon = function() {
+            var selectedIcon = selector.value;
+            preview.innerHTML = '<img src="' + selectedIcon + '" alt="Icon Preview" style="max-width:100px;"/>'; // Adjust size as needed
+        };
 
+        // Call previewIcon when the page loads to show the currently selected icon
+        previewIcon();
+    });
+</script>
+
+<script type="text/javascript">
+    // This script is for fetching release versions based on IaC type and updating the version selector.
+    function fetchReleaseVersions(repoUrl) {
+        return fetch(repoUrl)
+            .then(response => response.json())
+            .then(data => data.map(release => release.tag_name));
+    }
+
+    function updateVersionOptions(iacType, callback) {
+        let repoUrl;
+        switch(iacType) {
+            case 'terraform':
+                repoUrl = 'https://api.github.com/repos/hashicorp/terraform/releases';
+                break;
+            case 'terragrunt':
+                repoUrl = 'https://api.github.com/repos/gruntwork-io/terragrunt/releases';
+                break;
+            // Ensure the case matches the actual string used for openTofu
+            case 'tofu': // Adjust this case as necessary
+                repoUrl = 'https://api.github.com/repos/opentofu/opentofu/releases';
+                break;
+            default:
+                return;
+        }
+
+        fetchReleaseVersions(repoUrl).then(versions => {
+            const versionSelector = document.getElementById('versionSelector');
+            versionSelector.innerHTML = '';
+
+            versions.forEach(version => {
+                const option = document.createElement('option');
+                option.value = version;
+                option.text = version;
+                versionSelector.appendChild(option);
+            });
+
+            if(callback) callback();
+        });
+    }
+
+    function setInitialVersions(iacType, initialVersion) {
+        updateVersionOptions(iacType, function() {
+            const versionSelector = document.getElementById('versionSelector');
+            versionSelector.value = initialVersion;
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const iacTypeSelector = document.getElementById('iacTypeSelector'); 
+        const initialIacType = '{{ stack.iac_type }}';
+        const initialVersion = '{{ stack.tf_version }}';
+
+        iacTypeSelector.value = initialIacType;
+        setInitialVersions(initialIacType, initialVersion);
+
+        iacTypeSelector.addEventListener('change', function() {
+            updateVersionOptions(this.value);
+        });
+    });
 </script>
 {% endblock javascripts %}
+

@@ -1,0 +1,253 @@
+{% extends "layouts/base.html" %}
+{% from 'helpers/_forms.html' import render_field %}
+
+{% block title %} Edit Deploy {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+{% block content %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<main class="content">
+
+    {% include 'includes/navigation.html' %}
+
+    <div class="py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item"><a href="/deploys-list">Deploy</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Clone</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="h4">Clone Deploy</h1>
+            </div>
+            <div>
+                <a href="" class="btn btn-outline-gray"><i class="far fa-question-circle mr-1"></i> Deploy Docs</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card border-light shadow-sm components-section">
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-lg-4 col-sm-6">
+                            <!-- Form -->
+                            <div class="col-md-12 col-md-offset-1">
+                                <h1>Clone from {{deploy.name}}</h1>
+                                <form class="" method="post">
+                                    <div class="form-group">
+                                        {{ render_field(form.deploy_name, autocomplete="off", class='form-control', placeholder='Deploy name') }}
+                                    </div>
+<div class="form-group">
+    <label for="squadSelect">Squad:</label>
+    <select id="squadSelect" class="form-control" name="squad">
+        {% for item in squads %}
+            <option value="{{ item['squad'] }}">{{ item['squad'] }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="environmentSelect">Environment:</label>
+    <select id="environmentSelect" class="form-control" name="environment">
+        {% for item in environments %}
+            <option value="{{ item['environment'] }}">{{ item['environment'] }}</option>
+        {% endfor %}
+    </select>
+</div>
+                                    <div class="form-group">
+                                        {{ render_field(form.start_time, autocomplete="off", class='form-control',
+                                        value=deploy.start_time)
+                                        }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ render_field(form.destroy_time, autocomplete="off", class='form-control',
+                                        value=deploy.destroy_time) }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ render_field(form.branch, autocomplete="off", class='form-control',
+                                        value=deploy.stack_branch) }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ render_field(form.project_path,
+                                        autocomplete="off", class='form-control',
+                                        value=deploy.project_path) }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ render_field(form.tfvar_file, autocomplete="off", class='form-control',
+                                        value=deploy.tfvar_file) }}
+                                    </div>
+                                    {% if deploy.tfvar_file == "" %}
+                                    <div class="border-top my-4"></div>
+                                    <h2>Variables</h2>
+                                    <div class="border-top my-4"></div>
+                                    {% for key, value in data_json.items()|sort %}
+                                    <div class="form-group">
+                                        <span style="text-transform:capitalize">
+                                            <h6><strong>{{key}}</strong></h6>
+                                        </span>
+                                        {% if "passw" in key %}
+                                        <input type="password" value="{{ value }}" name={{ key }} class='form-control'
+                                            placeholder={{key}} autocomplete="off">
+                                        {% elif value == "true" or value == "false" %}
+                                        <select name="{{ key }}" class='form-control'>
+                                            <option value="true" {% if value=="true" %} selected {% endif %}>True
+                                            </option>
+                                            <option value="false" {% if value=="false" %} selected {% endif %}>False
+                                            </option>
+                                        </select>
+                                        {% elif value is iterable and not value is string %}
+                                        <textarea id="json{{ loop.index }}" name={{ key }} class='form-control' rows="6"
+                                            required placeholder={{key}}
+                                            autocomplete="off">{{ value | tojson | safe }}</textarea>
+                                        {% elif value is string %}
+                                        <input type="text" value="{{ value }}" name={{ key }} class='form-control'
+                                            placeholder={{key}} autocomplete="off">
+                                        {% else %}
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                    <!-- Add custom variables -->
+                                    <div class="border-top my-4"></div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div id="inputFormRow">
+                                            </div>
+
+                                            <div id="newRow"></div>
+                                            <button id="addRow" type="button" class="btn btn-info btn-sm">Add
+                                                Variable</button>
+                                        </div>
+                                    </div>
+                                    <div class="border-top my-4"></div>
+                                    <!-- End Add custom variables -->
+                                    {% endif %}
+                                    <button type="submit" class="btn w-100 btn-success" name="button" value=plan
+                                        action="{{url_for('.list_deploys')}}">
+                                        Plan
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- End Form -->
+
+                            <div class="input-group">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% include 'includes/footer.html' %}
+
+</main>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script type="text/javascript">
+    // add row
+    $("#addRow").click(function () {
+        var html = '';
+        html += '<div class="row">';
+        html += '<div id="inputFormRow">';
+        html += '<div class="input-group mb-3">';
+        html += ' <div class="col-sm-6">';
+        html += '<input type="text" name="sld_key" class="form-control m-input" placeholder="Enter variable name" autocomplete="off">';
+        html += '</div>';
+        html += ' <div class="col-sm-6">';
+        html += '<input type="text" name="sld_value" class="form-control m-input" placeholder="Enter variable value" autocomplete="off">';
+        html += '</div>';
+        html += '<div class="input-group-append">';
+        html += '<button id="removeRow" type="button" class="btn btn-danger btn-sm">Remove</button>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#newRow').append(html);
+    });
+
+    // remove row
+    $(document).on('click', '#removeRow', function () {
+        $(this).closest('#inputFormRow').remove();
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var textareas = document.querySelectorAll('textarea');
+        textareas.forEach(function (textarea) {
+            try {
+                var obj = JSON.parse(textarea.value);
+                textarea.value = JSON.stringify(obj, null, 4);
+            } catch (e) {
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var stackName = "{{ deploy.stack_name | default('') }}";
+        var stackNamePrefix = stackName.split('_')[0];
+        console.log("Stack Name Prefix:", stackNamePrefix);
+
+        var contentList;
+        if (stackNamePrefix === "aws") {
+            contentList = {{ aws_content | safe }};
+        } else if (stackNamePrefix === "azure") {
+            contentList = {{ azure_content | safe }};
+        } else if (stackNamePrefix === "gcp") {
+            contentList = {{ gcp_content | safe }};
+        } else if (stackNamePrefix === "custom") {
+            contentList = {{ custom_content | safe }};
+        } else {
+            contentList = [];
+        }
+
+        var squads = Array.from(new Set(contentList.map(item => item.squad)));
+        var environments = Array.from(new Set(contentList.map(item => item.environment)));
+
+        var squadSelect = document.getElementById("squadSelect");
+        var environmentSelect = document.getElementById("environmentSelect");
+
+        squads.forEach(function (squad) {
+            var option = document.createElement("option");
+            option.value = squad;
+            option.text = squad;
+            squadSelect.add(option);
+        });
+
+        environments.forEach(function (environment) {
+            var option = document.createElement("option");
+            option.value = environment;
+            option.text = environment;
+            environmentSelect.add(option);
+        });
+
+        function updateEnvironmentOptions(selectedSquad) {
+            var filteredEnvironments = contentList
+                .filter(item => item.squad === selectedSquad)
+                .map(item => item.environment);
+
+            environmentSelect.innerHTML = "";
+
+            filteredEnvironments.forEach(function (environment) {
+                var option = document.createElement("option");
+                option.value = environment;
+                option.text = environment;
+                environmentSelect.add(option);
+            });
+        }
+
+        squadSelect.addEventListener('change', function () {
+            var selectedSquad = squadSelect.value;
+            updateEnvironmentOptions(selectedSquad);
+        });
+    });
+</script>
+
+{% endblock javascripts %}

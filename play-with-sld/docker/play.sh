@@ -1,8 +1,8 @@
 #!/bin/bash
 check_docker () {
-    /usr/bin/which docker-compose >/dev/null
+    /usr/bin/which docker >/dev/null
     if [ $? = 0 ];then
-        echo "docker-compse ok"
+        echo "docker compse ok"
     else
         echo "Docker Compose not installed"
         echo "Run this command to download the current stable release of Docker Compose:"
@@ -22,37 +22,37 @@ check_docker () {
 }
 
 
-start_db_redis_rabbit() {
-    docker-compose up -d  db redis rabbit
+start_db_redis() {
+    docker compose up -d  db redis  mongodb
     sleep 15
 }
 
 
 start_backend() {
-    docker-compose up -d --remove-orphan api-backend worker remote-state
+    docker compose up -d api-backend worker remote-state
     sleep 10
 }
 
 
 start_frontend() {
-    docker-compose up -d --remove-orphan sld-dashboard schedule
+    docker compose up -d sld-dashboard schedule
 }
 
 
 start_init_credentials() {
-    curl -X POST "http://0.0.0.0:8000/api/v1/users/start" \
+    curl -X POST "http://localhost:8000/api/v1/users/start" \
         -H  "accept: application/json" \
         -H  "Content-Type: application/json" \
         -d "{\"password\":\"Password08@\"}" \
         -s -o /dev/null
 
     token=$(curl -X POST \
-        -s "http://0.0.0.0:8000/api/v1/authenticate/access-token-json" \
+        -s "http://localhost:8000/api/v1/authenticate/access-token-json" \
         -H  "accept: application/json" \
         -H  "Content-Type: application/json" \
         -d "{\"username\":\"admin\",\"password\":\"Password08@\"}"|jq .access_token|tr -d '"')
 
-    curl -X POST "http://0.0.0.0:8000/api/v1/users/" \
+    curl -X POST "http://localhost:8000/api/v1/users/" \
         -H  "accept: application/json" \
         -H  "Authorization: Bearer ${token}" \
         -H  "Content-Type: application/json" \
@@ -61,8 +61,8 @@ start_init_credentials() {
             echo '#################################################'
             echo '#  Now, you can play with SLD 🕹️                #'
             echo '#################################################'
-            echo "API: http://0.0.0.0:8000/docs"
-            echo "DASHBOARD: http://0.0.0.0:5000/"
+            echo "API: http://localhost:8000/docs"
+            echo "DASHBOARD: http://localhost:5000/"
             echo '---------------------------------------------'
             echo "username: admin"
             echo "password: Password08@"
@@ -80,7 +80,7 @@ start_init_credentials() {
         case "$1" in
 
             start)  echo "Starting SLD for play"
-                start_db_redis_rabbit
+                start_db_redis
                 start_backend
                 start_frontend
                 ;;

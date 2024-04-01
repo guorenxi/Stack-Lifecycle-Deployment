@@ -11,7 +11,7 @@
 
     {% include 'includes/navigation.html' %}
         <div class="preloader bg-soft flex-column justify-content-center align-items-center">
-            <img class="loader-element animate__animated animate__jackInTheBox" src="/static/assets/img/brand/light.svg" height="60" alt="Volt logo">
+            <img class="loader-element animate__animated animate__jackInTheBox" src="/static/assets/img/brand/light.svg" height="90" alt="Volt logo">
         </div>
 
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
@@ -34,12 +34,16 @@
     <div class="table-settings mb-4">
         <div class="row align-items-center justify-content-between">
             <div class="col col-md-6 col-lg-3 col-xl-4">
+                <div class="input-group" style="height: 0; overflow: hidden;">
+                    <input type="text" autocomplete="off">
+                </div>
                 <div class="input-group">
                     <span class="input-group-text" id="basic-addon2"><span class="fas fa-search"></span></span>
                     <input type="text" class="form-control" id="search" onkeyup="search()" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
                 </div>
             </div>
             <div class="col-4 col-md-2 col-xl-1 pl-md-0 text-right">
+                <!--
                 <div class="btn-group">
                     <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="icon icon-sm icon-gray">
@@ -49,56 +53,62 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-xs dropdown-menu-right">
                         <span class="dropdown-item font-weight-bold text-dark">Show</span>
-                        <a class="dropdown-item d-flex font-weight-bold" href="/users-list">30 <span class="icon icon-small ml-auto"><span class="fas fa-check"></span></span></a>
-                        <a class="dropdown-item font-weight-bold" href="/users-list/50">50</a>
-                        <a class="dropdown-item font-weight-bold" href="/users-list/100">100</a>
-                        <a class="dropdown-item font-weight-bold" href="/users-list/200">200</a>
-                        <a class="dropdown-item font-weight-bold" href="/users-list/300">300</a>
+                        <a class="dropdown-item d-flex font-weight-bold" href="/users-list">All<span class="icon icon-small ml-auto"><span class="fas fa-check"></span></span></a>
+                        <a class="dropdown-item font-weight-bold" href="/users-list/50">5</a>
+                        <a class="dropdown-item font-weight-bold" href="/users-list/100">20</a>
+                        <a class="dropdown-item font-weight-bold" href="/users-list/200">50</a>
                     </div>
                 </div>
+                -->
             </div>
         </div>
     </div>
     <div class="card card-body border-light shadow-sm table-wrapper table-responsive pt-0">
-        <table class="table table-hover" id="table">
-            <thead>
+        <table class="table table-striped" id="table">
+            <thead class="thead-dark">
                 <tr>
-                    <th>Role</th>
+                    <th></th>
                     <th>Id</th>
                     <th>User Name</th>
                     <th>Full Name</th>
                     <th>Email</th>
                     <th>Squad</th>
-                    <th>privilege</th>
+                    <th>Role</th>
                     <th>is_active</th>
-                    {% if current_user.master %}
-                    <th>master</th>
-                    {% endif %}
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Item -->
-                {% for user in users %}
+                {% for user in users | sort(attribute='id') %}
                 <tr>
                     </td>
                     {% if not user.is_active %}
                     <td><span class="icon icon-sm text-danger w-30" ><span class="fas fa-user-alt-slash mr-2"></span></td>
-                    {% elif "bot" in user.fullname %}
+                    {% elif "R2-D2" in user.role %}
                     <td><span class="icon icon-sm w-30" ><img src="/static/assets/img/team/bot.png"</span></td>
-                    {% elif user.master %}
+                    {% elif "yoda" in user.role %}
                     <td><span class="icon icon-sm w-30" ><img src="/static/assets/img/team/root.png"</span></td>
-                    {% elif user.privilege %}
+                    {% elif "darth_vader" in user.role  %}
                     <td><span class="icon icon-sm w-30" ><img src="/static/assets/img/team/admin.png"</span></td>
                     {% else %}
                     <td><span class="icon icon-sm w-30" ><img src="/static/assets/img/team/user.png"</span></td>
                     {% endif %}
                     <td><span class="font-weight-normal">{{ user.id }}</span></td>
-                    <td><span class="font-weight-normal">{{ user.username }}</span></td>
+                    <td>
+                        <div>
+                         <span class="tag-style">{{ user.username }}</span>
+                         <span class="copy-icon"
+                            onclick="copyToClipboard('{{ user.username }}')" title="Copy to clipboard">
+                            <i class="far fa-copy"></i>
+                        </div>
+                        </span> 
+                    </td>
                     <td><span class="font-weight-normal">{{ user.fullname }}</span></td>
                     <td><span class="font-weight-normal">{{ user.email }}</span></td>
                     <td><span class="font-weight-normal">{{ user.squad }}</span></td>
-                    <td><span class="font-weight-normal">{{ user.privilege }}</span></td>
-                    <td><span class="font-weight-normal">{{ user.is_active }}</span></td>
+                    <td><span class="font-weight-normal">{{ user.role }}</span></td>
+                    <td><span class="tag-style">{{ user.is_active }}</span></td>
                     {% if current_user.master %}
                     <td><span class="font-weight-normal">{{ user.master }}</span></td>
                     {% endif %}
@@ -121,24 +131,14 @@
             </tbody>
         </table>
         <div class="card-footer px-3 border-0 d-flex align-items-center justify-content-between">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination mb-0">
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item active">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                </ul>
-            </nav>
+         <!-- Pagination -->
+         <nav>
+            <ul class="pagination">
+              <li class="page-item" id="previous-page"><a class="page-link" href="#">Previous</a></li>
+              <!-- Page numbers will be dynamically inserted here -->
+              <li class="page-item" id="next-page"><a class="page-link" href="#">Next</a></li>
+            </ul>
+          </nav>
             <div class="font-weight-bold small"><b></b><b></b></div>
         </div>
     </div>
@@ -148,26 +148,8 @@
 </main>
 
 {% endblock content %}
-
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<script>
-function search() {
-  const input = document.getElementById('search')
-  const filter = input.value.toLowerCase()
-  const table = document.getElementById('table')
-  const tr = [...table.getElementsByTagName('tr')]
-
-  tr.forEach((t) => {
-    const foundMatch = [...t.getElementsByTagName('td')].some((td) => {
-      return td.innerHTML.toLowerCase().indexOf(filter) > -1
-    })
-    if (foundMatch) {
-      t.style.display = ''
-    } else {
-      t.style.display = 'none'
-    }
-  })
-}
-</script>
+<script src="/static/assets/js/pagination_edit.js"></script>
+<script src="/static/assets/js/copy_clipboard.js"></script>
 {% endblock javascripts %}

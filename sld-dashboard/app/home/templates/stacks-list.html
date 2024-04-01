@@ -11,7 +11,7 @@
 
     {% include 'includes/navigation.html' %}
         <div class="preloader bg-soft flex-column justify-content-center align-items-center">
-            <img class="loader-element animate__animated animate__jackInTheBox" src="/static/assets/img/brand/light.svg" height="60" alt="Volt logo">
+            <img class="loader-element animate__animated animate__jackInTheBox" src="/static/assets/img/brand/light.svg" height="90" alt="Volt logo">
         </div>
 
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
@@ -28,31 +28,40 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group">
+            <div>
+                <button onclick="changeView('cards')" class="btn btn-outline-gray" title="Change cards view">
+                <i class="fa fa-th" aria-hidden="true"></i>
+                </button>
+            </div>
             </div>
         </div>
     </div>
     <div class="table-settings mb-4">
         <div class="row align-items-center justify-content-between">
             <div class="col col-md-6 col-lg-3 col-xl-4">
+               <div class="input-group" style="height: 0; overflow: hidden;">
+                <input type="text" autocomplete="off">
+                </div> 
                 <div class="input-group">
                     <span class="input-group-text" id="basic-addon2"><span class="fas fa-search"></span></span>
-                    <input type="text" class="form-control" id="search" onkeyup="search()" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+                    <input type="text" class="form-control" id="search" onkeyup="search()" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" autocomplete="off">
                 </div>
             </div>
-    <div class="card card-body border-light shadow-sm table-wrapper table-responsive pt-0">
-        <table class="table table-hover" id="table">
-            <thead>
+    <div class="card card-body border-light shadow-sm table-wrapper table-responsive pt-0 m-4">
+        <table class="table table-striped" id="table">
+            <thead class="thead-dark">
                 <tr>
-                    <th></th>
+                    <th>Stack</th>
                     <th>Stack id</th>
                     <th>Stack Name</th>
-                    {% if current_user.privilege %}
-                    <th>Stack Repo</th>
-                    <th>Branch</th>
-                    <th>Tf version</th>
-                    <th>squad_access</th>
+                    {% if "yoda" in  current_user.role or "darth_vader" in current_user.role %}
+                    <th>Stack Repo | Branch</th>
                     {% endif %}
+                    <th>IaC Type</th>
+                    <th>IaC version</th>
+                    <th>squad_access</th>
                     <th>Description</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -61,25 +70,91 @@
                 <tr>
                     </td>
                     {% if "aws" in stack.stack_name %}
-                    <td><span class="icon icon-sm w-30" ><span class="fab fa-aws"></span></span></td>
+                    <td>
+                        {% if stack.icon_path  %}
+                        <img src="{{ stack.icon_path }}" alt="Icono" width="40" height="40">
+                        {% else %}
+                        <img src="/static/assets/img/gallery/Providers/aws.svg" alt="Icono" width="40" height="40">
+                        {% endif %}
+                    </td>
                     {% elif "gcp" in stack.stack_name %}
-                    <td><span class="icon icon-sm w-30"><span class="fab fa-google"></span></span></td>
+                    <td>
+                        {% if stack.icon_path  %}
+                        <img src="{{ stack.icon_path }}" alt="Icono" width="40" height="40">
+                        {% else %}
+                        <img src="/static/assets/img/gallery/Providers/gcp.svg" alt="Icono" width="40" height="40">
+                        {% endif %}
+                    </td>
                     {% elif "azure" in stack.stack_name %}
-                    <td><span class="icon icon-sm w-30"><span class="fab fa-windows"></span></span></td>
+                    <td>
+                        {% if stack.icon_path  %}
+                        <img src="{{ stack.icon_path }}" alt="Icono" width="40" height="40">
+                        {% else %}
+                        <img src="/static/assets/img/gallery/Providers/azure.svg" alt="Icono" width="40" height="40">
+                        {% endif %}
+                    </td>
                     {% else %}
-                    <td><span class="icon icon-sm"><span class="fas fa-box-open"></span></span></td>
+                    <td>
+                        {% if stack.icon_path  %}
+                        <img src="{{ stack.icon_path }}" alt="Icono" width="40" height="40">
+                        {% else %}
+                        <img src="/static/assets/img/gallery/Providers/custom.svg" alt="Icono" width="40" height="40">
+                        {% endif %}
+                    </td>
                     {% endif %}
                     <td><span class="font-weight-normal">{{ stack.id }}</span></td>
-                    <td><span class="font-weight-normal">{{ stack.stack_name }}</span></td>
-                    {% if current_user.privilege %}
-                    <td><span class="font-weight-normal">{{ stack.git_repo }}</span></td>
-                    <td><span class="font-weight-normal">{{ stack.branch }}</span></td>
-                    <td><span class="font-weight-normal">{{ stack.tf_version }}</span></td>
-                    <td><span class="font-weight-normal">{{ stack.squad_access }}</span></td>
-                    {% endif %}
-                    <td><span class="font-weight-normal">{{ stack.description}}</span></td>
                     <td>
-                    {% if current_user.master %}
+                        <div class="limit_words" title="{{stack.stack_name}}">
+                        <span class="tag-style">{{ stack.stack_name }}</span>
+                        </div>
+                    </td>
+                    {% if "yoda" in  current_user.role or "darth_vader" in current_user.role %}
+                    <td>
+                        <div class="limit_words" title="{{ stack.git_repo }}">
+                        <span style="font-size: 12px; font-weight: bold;">repo:</span>
+                        <span class="font-weight-normal">{{ stack.git_repo.split('/')[-1] | replace('.git', '') }}</span>
+                        </div>
+                        <div class="limit_words" title="{{ stack.branch }}">
+                        <span style="font-size: 12px; font-weight: bold;">branch:</span>
+                        <span class="font-weight-normal">{{ stack.branch }}</span>
+                        <div>
+                        <span class="copy-icon" onclick="copyToClipboard('{{ stack.git_repo | replace('.git', '') }}/tree/{{ stack.branch }}')" title="Copy to clipboard">
+                            <span style="font-size: 12px; font-weight: bold;">copy:</span>
+                            <i class="far fa-copy"></i>
+                        </div>
+                        </div>
+                    </td>
+                    {% endif %}
+                    <td><span >
+                         {% if stack.iac_type == 'terraform' %}
+                             <img src="{{ url_for('static', filename='/assets/img/iac_type/tf.svg') }}" alt="Terraform Icon" width="60" height="60">
+                         {% elif stack.iac_type == 'tofu' %}
+                             <img src="{{ url_for('static', filename='/assets/img/iac_type/tofu.svg') }}" alt="Tofu Icon" width="60" height="60">
+                         {% elif stack.iac_type == 'terragrunt' %}
+                             <img src="{{ url_for('static', filename='/assets/img/iac_type/terragrunt.svg') }}" alt="Tofu Icon" width="60" height="60">
+                         {% endif %}
+                     </span></td>
+                    <td><span class="tag-style">{{ stack.tf_version }}</span></td>
+                    <td>
+                        <div class="limit_words">
+                            {% if "*" in stack.squad_access %}
+                                All Squad
+                            {% else %}
+                               {{ stack.squad_access | join(',') }} 
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="limit_words">
+                        <span class="font-weight-normal">{{ stack.description}}</span>
+                        </div>
+                    </td>
+                    <td>
+                            <span class="icon icon-sm">
+                                <a title="Deploy Stack" class="dropdown-item" href="{{ url_for('.deploy_stack', stack_id=stack.id)}}"><span class="fas fa-power-off"></span></a>
+                                <a title="Details" class="dropdown-item" href="{{ url_for('.details_stack', stack_id=stack.id)}}"><span class="fa fa-info"></span></a>
+                    {% if "yoda" in  current_user.role or "darth_vader" in current_user.role %}
                         <div class="btn-group">
                             <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="icon icon-sm">
@@ -95,8 +170,6 @@
                             </div>
                         </div>
                             <!-- Deploy button -->
-                            <span class="icon icon-sm">
-                                <a title="Deploy Stack" class="dropdown-item" href="{{ url_for('.deploy_stack', stack_id=stack.id)}}"><span class="fas fa-power-off"></span></a>
                     </td>
                 </tr>
                 <!-- Modal sync-->
@@ -121,7 +194,7 @@
 
                                 <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
 
-                                <form action="{{ url_for('.resync_stack', stack_id=stack.id)}}" onsubmit="return checkForm(this);">
+                                <form action="{{ url_for('.resync_stack',view_mode='table', stack_id=stack.id)}}" onsubmit="return checkForm(this);">
                                     <input type="submit" value="Sync Repo" name="stackButton" class="btn btn-danger">
                                 </form>
                             </div>
@@ -149,7 +222,7 @@
 
                                 <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
 
-                                <form action="{{ url_for('.delete_stack', stack_name=stack.stack_name)}}">
+                                <form action="{{ url_for('.delete_stack', view_mode='table', stack_name=stack.stack_name)}}">
                                     <input type="submit" value="Remove Repo" class="btn btn-danger">
                                 </form>
                             </div>
@@ -160,27 +233,14 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div class="card-footer px-3 border-0 d-flex align-items-center justify-content-between">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination mb-0">
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item active">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                </ul>
-            </nav>
-            <div class="font-weight-bold small"><b></b><b></b></div>
         </div>
+        <nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item" id="previous-page"><a class="page-link" href="#">Previous</a></li>
+    <!-- Los números de página se insertarán aquí dinámicamente -->
+    <li class="page-item" id="next-page"><a class="page-link" href="#">Next</a></li>
+  </ul>
+</nav>
     </div>
 
     {% include 'includes/footer.html' %}
@@ -202,24 +262,8 @@ function checkForm(form) // Submit button clicked
   }
 
 </script>
-<script>
-function search() {
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("search");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("table");
-  tr = table.getElementsByTagName("tr");
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[2];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    }       
-  }
-}
-</script>
+<script src="/static/assets/js/pagination_edit.js"></script>
+<script src="/static/assets/js/copy_clipboard.js"></script>
+<script src="/static/assets/js/selector_stacks.js"></script>
+
 {% endblock javascripts %}

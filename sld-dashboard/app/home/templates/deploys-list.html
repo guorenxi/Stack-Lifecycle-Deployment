@@ -1,41 +1,57 @@
 {% extends "layouts/base.html" %}
 
 {% block title %} Deploys {% endblock %}
-
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 {% block content %}
 <main class="content">
-
     {% include 'includes/navigation.html' %}
-
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
         <div class="btn-toolbar dropdown">
-            <button class="btn btn-primary btn-sm mr-2 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                                                                                               aria-expanded="false">
-                <span class="fas fa-plus mr-2"></span>New Task
+            <button
+                class="btn btn-primary btn-sm mr-2 dropdown-toggle"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+            >
+                <span class="fas fa-plus mr-2"></span>
+                New Task
             </button>
             <div class="dropdown-menu dashboard-dropdown dropdown-menu-left mt-2">
                 {% if current_user.master or current_user.privilege %}
-                <a class="dropdown-item font-weight-bold" href="users-new"><span class="fas fa-user-shield"></span>New
-                    user account</a>
-                <a class="dropdown-item font-weight-bold" href="stacks-new"><span class="fas fa-box-open"></span>New
-                    Stack</a>
+                <a class="dropdown-item font-weight-bold" href="users-new">
+                    <span class="fas fa-user-shield"></span>
+                    New
+                    user account
+                </a>
+                <a class="dropdown-item font-weight-bold" href="stacks-new">
+                    <span class="fas fa-box-open"></span>
+                    New
+                    Stack
+                </a>
                 {% endif %}
-                <a class="dropdown-item font-weight-bold" href="stacks-list"><span class="fas fa-layer-group"></span>New
-                    Deploy</a>
+                <a class="dropdown-item font-weight-bold" href="stacks-list">
+                    <span class="fas fa-layer-group"></span>
+                    New
+                    Deploy
+                </a>
                 <div role="separator" class="dropdown-divider"></div>
             </div>
         </div>
     </div>
-
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
         <div class="d-block mb-4 mb-md-0">
             <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
                 <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
-                    <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
-                    <li class="breadcrumb-item"><a href="#">Deploys</a></li>
+                    <li class="breadcrumb-item">
+                        <a href="#">
+                            <span class="fas fa-home"></span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="#">Deploys</a>
+                    </li>
                     <li class="breadcrumb-item active" aria-current="page">List</li>
                 </ol>
             </nav>
@@ -43,26 +59,37 @@
             <p class="mb-0">List of all deployments</p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group">
-            </div>
+            <div class="btn-group"></div>
         </div>
     </div>
     <div class="table-settings mb-4">
         <div class="row align-items-center justify-content-between">
             <div class="col col-md-6 col-lg-3 col-xl-4">
+                <div class="input-group" style="height: 0; overflow: hidden;">
+                    <input type="text" autocomplete="off">
+                </div>
                 <div class="input-group">
-                    <span class="input-group-text" id="asic-addon2"><span class="fas fa-search"></span></span>
-                    <input type="text" class="form-control" id="search" onkeyup="search()" placeholder="Search"
-                                                                                           aria-label="Search" aria-describedby="basic-addon2">
+                    <span class="input-group-text" id="asic-addon2">
+                        <span class="fas fa-search"></span>
+                    </span>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="search"
+                        placeholder="Search"
+                        aria-label="Search"
+                        aria-describedby="basic-addon2"
+                    >
                 </div>
             </div>
             <div class="col-4 col-md-2 col-xl-1 pl-md-0 text-right">
-
                 <!-- refresh -->
                 <span class="icon icon-sm">
                     <a class="nav-link icon-notifications text-dark" href="/deploys-list">
-                        <span class="fas fa-redo-alt mr-1"></span></a>
+                        <span class="fas fa-redo-alt mr-1"></span>
+                    </a>
                     <div class="btn-group">
+                        <!--
                         <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="icon icon-sm icon-gray">
@@ -72,291 +99,542 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-xs dropdown-menu-right">
                             <span class="dropdown-item font-weight-bold text-dark">Show</span>
-                            <a class="dropdown-item d-flex font-weight-bold" href="/deploys-list/35">35 <span
-                                                                             class="icon icon-small ml-auto"><span class="fas fa-check"></span></span></a>
-                            <a class="dropdown-item font-weight-bold" href="/deploys-list/55">55</a>
-                            <a class="dropdown-item font-weight-bold" href="/deploys-list/75">75</a>
-                            <a class="dropdown-item font-weight-bold" href="/deploys-list/90">90</a>
-                            <a class="dropdown-item font-weight-bold" href="/deploys-list/100">100</a>
+                            <a class="dropdown-item d-flex font-weight-bold" href="/deploys-list">All <span
+                                                                             class="small ml-auto"><span class="fas fa-check"></span></span></a>
                         </div>
-                    </div>
+                        --></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="card card-body border-light shadow-sm table-wrapper table-responsive pt-0">
-        <table class="table table-hover" id="table">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Deploy Name</th>
-                    <th>Stack</th>
-                    <th>Squad</th>
-                    <th>Environment</th>
-                    <th>Username</th>
-                    <th>Start_time</th>
-                    <th>Destroy_time</th>
-                    <th>Action</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Item -->
-                {% for deploy in deploys| sort(attribute='id') %}
-                <tr>
+    <div class="card card-body border-light shadow-sm table-wrapper table-responsive pt-0 m-4">
+        <table class="table table-striped" id="table">
+            <thead class="thead-dark">
+                    <tr>
+                        <th>Id</th>
+                        <th>Stack</th>
+                        <th>Deploy Name| Stack | Branch</th>
+                        <th>Squad</th>
+                        <th>Environment</th>
+                        <th>Apply_time | Destroy_time</th>
+                        <th>Action</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Item -->
+                    {% for deploy in deploys %}
+                    <tr>
+                        <td>
+                            <a href="" class="font-weight-bold">
+                                <div>{{ deploy.id }}</div>
+                            </a>
+                        </td>
+                    {% if "aws" in deploy.stack_name %}
                     <td>
-                        <a href="" class="font-weight-bold">
-                            {{ deploy.id }}
-                        </a>
+                        {% if deploy.icon_path  %}
+                        <img src="{{ deploy.icon_path }}" alt="Icono" width="40" height="40">
+                        {% else %}
+                        <img src="/static/assets/img/gallery/Providers/aws.svg" alt="Icono" width="40" height="40">
+                        {% endif %}
                     </td>
+                        {% endif %}
+                        {% if "azure" in deploy.stack_name %}
                     <td>
-                        <span class="font-weight-normal">{{ deploy.name }}</span>
+                        {% if deploy.icon_path  %}
+                        <img src="{{ deploy.icon_path }}" alt="Icono" width="40" height="40">
+                        {% else %}
+                        <img src="/static/assets/img/gallery/Providers/azure.svg" alt="Icono" width="40" height="40">
+                        {% endif %}
                     </td>
-                    <td><span class="font-weight-normal">{{ deploy.stack_name }}</span></td>
-                    <td><span class="font-weight-normal">{{ deploy.squad}}</span></td>
-                    <td><span class="font-weight-normal">{{ deploy.environment}}</span></td>
-                    <td><span class="font-weight-normal">{{ deploy.username}}</span></td>
-                    <td><span class="font-weight-bold">{{ deploy.start_time }}</span></td>
-                    <td><span class="font-weight-bold">{{ deploy.destroy_time }}</span></td>
-                    <td><span class="font-weight-normal">{{ deploy.action}}</span></td>
-                    {% set status = task_status(deploy.task_id, token).result %}
-                    {% if status == "SUCCESS" %}
-                    <td><span class="font-weight-bold text-success">{{ status }}</span></td>
-                    {% elif status == "ERROR" or (status == "FAILURE") %}
-                    <td><span class="font-weight-bold text-danger">{{ status }}</span></td>
-                    {% elif status == "RETRY" %}
-                    <td><span class="font-weight-bold text-warning">{{ status }}</span></td>
-                    {% else %}
-                    <td><span class="font-weight-bold text-info ">{{ status }}</span></td>
-                    {% endif %}
+                        {% endif %}
+                        {% if "gcp" in deploy.stack_name %}
                     <td>
-                        <!-- button group-->
-                        <div class="btn-group">
-                            <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-1 p-1"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="icon icon-sm">
-                                    <span class="fas fa-ellipsis-h icon-dark"></span>
-                                </span>
-                                <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            {% if deploy.action == "Plan"%}
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ url_for('.edit_deploy',deploy_id=deploy.id)}}">
-                                    <span class="fas fa-edit mr-2"></span>Edit</a>
-                                <a class="dropdown-item" href="{{ url_for('.relaunch_deploy',deploy_id=deploy.id)}}">
-                                    <span class="fas fa-sync mr-2"></span>Approve</a>
-                                <a class="dropdown-item text-danger" data-toggle="modal"
-                                                                     data-target="#DeleteModalCenter-{{deploy.id}}">
-                                    <span class="fas fa-skull-crossbones mr-2"></span> delete </a>
-                            </div>
-                            {% elif deploy.action == "DryRun"%}
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ url_for('.edit_deploy',deploy_id=deploy.id)}}">
-                                    <span class="fas fa-edit mr-2"></span>Edit</a>
-                                <a class="dropdown-item" href="{{ url_for('.relaunch_deploy',deploy_id=deploy.id)}}">
-                                    <span class="fas fa-sync mr-2"></span>ReDeploy</a>
-                            </div>
-                            {% else %}
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ url_for('.edit_deploy',deploy_id=deploy.id)}}">
-                                    <span class="fas fa-edit mr-2"></span>Edit</a>
-                                <a class="dropdown-item" href="{{ url_for('.relaunch_deploy',deploy_id=deploy.id)}}">
-                                    <span class="fas fa-sync mr-2"></span>ReDeploy</a>
-                                <a class="dropdown-item text-danger" data-toggle="modal"
-                                                                     data-target="#DestroyModalCenter-{{deploy.id}}">
-                                    <span class="fas fa-trash-alt mr-2"></span>Destroy</a>
-                                <a class="dropdown-item text-danger" data-toggle="modal"
-                                                                     data-target="#DeleteModalCenter-{{deploy.id}}">
-                                    <span class="fas fa-skull-crossbones mr-2"></span> delete </a>
-                            </div>
-                            {% endif %}
-                            <!-- Output-->
-                            <span class="icon icon-sm">
-                                <a title="Output Deploy" class="nav-link icon-notifications text-dark" data-toggle="modal"
-                                                                                 data-target="#OutputModalCenter-{{deploy.id}}">
-                                    <span class="fab fa-searchengin mr-0"></span></a>
-                            </span>
-                            <!-- Schedule -->
-                            <span class="icon icon-sm">
-                                <a title="Edit Schedule" class="dropdown-item" href="{{ url_for('.edit_schedule',deploy_id=deploy.id)}}">
-                                    <span class="far fa-clock mr-0"></span></a>
-                            </span>
-                            {% if current_user.privilege %}
-                            <!-- Unlock-->
-                            <span class="icon icon-sm">
-                                <a title="Unlock Deploy" class="nav-link icon-notifications text-dark" data-toggle="modal"
-                                                                                 data-target="#UnlockModalCenter-{{deploy.id}}">
-                                    <span class="fas fa-unlock mr-0"></span></a>
-                            </span>
-                            {% endif %}
-                        </div>
+                        {% if deploy.icon_path  %}
+                        <img src="{{ deploy.icon_path }}" alt="Icono" width="40" height="40">
+                        {% else %}
+                        <img src="/static/assets/img/gallery/Providers/gcp.svg" alt="Icono" width="40" height="40">
+                        {% endif %}
                     </td>
-                </tr>
-                <!-- Modal Unlock-->
-                <div class="modal fade" id="UnlockModalCenter-{{deploy.id}}">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="UnlockModalLongTitle-{{deploy.id}}">Unlock Deploy
-                                                                                                {{deploy.name}}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <p> <strong>Acquires a state lock to protect the state from being written
-                                by multiple users at the same time. Please resolve the issue and try
-                                again. You can disable locking with the "Unlock botton", but this is not
-                                                                                          recommended:</strong></p>
-                                <p><strong>Are you sure? </strong></p>
-                            </div>
-                            <div class="modal-footer">
+                        {% endif %}
+                        {% if "custom" in deploy.stack_name %}
+                    <td>
+                        {% if deploy.icon_path  %}
+                        <img src="{{ deploy.icon_path }}" alt="Icono" width="40" height="40">
+                        {% else %}
+                        <img src="/static/assets/img/gallery/Providers/custom.svg" alt="Icono" width="40" height="40">
+                        {% endif %}
+                    </td>
+                        {% endif %}
 
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                        <td>
+                            <span class="font-weight-normal">
+                                <div class="limit_words" title="{{ deploy.name }}" style="font-size: 17px; font-weight: bold;">{{ deploy.name }}</div>
+                                <div class="limit_words" title="{{ deploy.stack_name }}">
+                                    <span style="font-size: 12px; font-weight: bold;">stack</span>
+                                    : {{ deploy.stack_name }}
+                                </div>
+                                <div class="limit_words" title="{{ deploy.stack_branch}}"></div>
+                                    <span style="font-size: 12px; font-weight: bold;">branch</span>
+                                    : {{deploy.stack_branch}}
+                                </div>
+                                <div class="limit_words" title="{{ deploy.username}}"></div>
+                                    <span style="font-size: 12px; font-weight: bold;">Username:</span>
+                                    {{deploy.username}}
+                                </div>
+                                <div>
+                                    <span class="copy-icon" onclick="copyToClipboard('id={{ deploy.id }} deploy_name={{ deploy.name }} environment={{ deploy.environment }} stack/branch={{deploy.stack_name}}/{{deploy.stack_branch}} task_id={{deploy.task_id}} username={{ deploy.username}}')" title="Copy to clipboard">
+                                        <span style="font-size: 12px; font-weight: bold;">copy:</span>
+                                        <i class="far fa-copy"></i>
+                                    </span>
+                                    <span class="download-icon" data-variables="{{ deploy.variables }}" onclick="downloadTFVars(this)" title="Download tfvars">
+                                        <span style="font-size: 12px; font-weight: bold;">tfvars:</span>
+                                        <i class="far fa-file"></i>
+                                    </span>
+                                </div>
+                            </span>
+                        </td>
+                        <td>
+                        <div class="limit_words">
+                            <span class="tag-style">{{ deploy.squad}}</span>
+                        </div>
+                        </td>
+                        <td> 
+                        <div class="limit_words">
+                            <span class="tag-style">{{ deploy.environment}}</span>
+                        </div>
+                        </td>
+                        <td>
+                            <div>
+                            <span style="font-size: 12px; font-weight: bold;">Apply:</span>
+                            <span class="font-weight-bold">{{ deploy.start_time }}</span>
+                            </div>
+                            <div>
+                            <span style="font-size: 12px; font-weight: bold;">Destroy:</span>
+                            <span class="font-weight-bold">{{ deploy.destroy_time }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="tag-style">{{ deploy.action}}</span>
+                        </td>
+                        <td id="status-{{ deploy.task_id }}">
+                            <td>
+                                <!-- button group-->
+                                <div class="btn-group">
+                                    <button
+                                        class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-1 p-1"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                    >
+                                        <span class="icon icon-sm">
+                                            <span class="fas fa-ellipsis-h icon-dark"></span>
+                                        </span>
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
+                                    {% if deploy.action == "Destroy"%}
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="{{ url_for('.relaunch_plan',deploy_id=deploy.id)}}">
+                                            <span class="fas fa-sync mr-2"></span>
+                                            Plan
+                                        </a>
+                                        <a class="dropdown-item" href="{{ url_for('.edit_deploy',deploy_id=deploy.id)}}">
+                                            <span class="fas fa-edit mr-2"></span>
+                                            Edit
+                                        </a>
+                                        <a class="dropdown-item" href="{{ url_for('.relaunch_deploy',deploy_id=deploy.id)}}">
+                                            <span class="fas fa-cloud mr-2"></span>
+                                            Apply
+                                        </a>
+                                        <a class="dropdown-item" href="{{ url_for('.clone_deploy',deploy_id=deploy.id)}}">
+                                            <span class="fas fa-clone mr-2"></span>
+                                            Clone 
+                                        </a>
+                                        <a title="Edit Schedule" class="dropdown-item" href="{{ url_for('.edit_schedule',deploy_id=deploy.id)}}">
+                                            <span class="far fa-clock mr-0"></span>
+                                            Schedule
+                                        </a>
+                                        <a class="dropdown-item text-danger" data-toggle="modal" data-target="#DestroyModalCenter-{{deploy.id}}">
+                                            <span class="fas fa-trash-alt mr-2"></span>
+                                            Destroy
+                                        </a>
+                                        <a class="dropdown-item text-danger" data-toggle="modal" data-target="#DeleteModalCenter-{{deploy.id}}">
+                                            <span class="fas fa-skull-crossbones mr-2"></span>
+                                            Delete
+                                        </a>
+                                    <!-- Task Unlock -->
+                                        <a
+                                            title="Force remove task locked {{deploy.task_id}}"
+                                            class="dropdown-item"
+                                            data-toggle="modal"
+                                            data-target="#TaskModalCenter-{{deploy.task_id}}"
+                                        >
+                                            <span class="fas fa-tasks mr-2"></span>
+                                            Task 
+                                        </a>
+                                    </div>
+                                    {% else %}
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="{{ url_for('.relaunch_plan',deploy_id=deploy.id)}}">
+                                            <span class="fas fa-sync mr-2"></span>
+                                            Plan
+                                        </a>
+                                        <a class="dropdown-item" href="{{ url_for('.edit_deploy',deploy_id=deploy.id)}}">
+                                            <span class="fas fa-edit mr-2"></span>
+                                            Edit
+                                        </a>
+                                        <a class="dropdown-item" href="{{ url_for('.relaunch_deploy',deploy_id=deploy.id)}}">
+                                            <span class="fas fa-cloud mr-2"></span>
+                                            Apply
+                                        </a>
+                                        <a class="dropdown-item" href="{{ url_for('.clone_deploy',deploy_id=deploy.id)}}">
+                                            <span class="fas fa-clone mr-2"></span>
+                                            Clone 
+                                        </a>
+                                        <a title="Edit Schedule" class="dropdown-item" href="{{ url_for('.edit_schedule',deploy_id=deploy.id)}}">
+                                            <span class="far fa-clock mr-0"></span>
+                                            Schedule
+                                        </a>
+                                        <a class="dropdown-item text-danger" data-toggle="modal" data-target="#DestroyModalCenter-{{deploy.id}}">
+                                            <span class="fas fa-trash-alt mr-2"></span>
+                                            Destroy
+                                        </a>
+                                    {% if "yoda" in current_user.role or "darth_vader" in current_user.role %}
+                                    <!-- Unlock-->
+                                        <a
+                                            title="Unlock Terraform State"
+                                            class="dropdown-item"
+                                            data-toggle="modal"
+                                            data-target="#UnlockModalCenter-{{deploy.id}}"
+                                        >
+                                            <span class="fas fa-unlock mr-2"></span>
+                                            Unlock
+                                        </a>
+                                    <!-- Task Unlock -->
+                                        <a
+                                            title="Force remove task locked {{deploy.task_id}}"
+                                            class="dropdown-item"
+                                            data-toggle="modal"
+                                            data-target="#TaskModalCenter-{{deploy.task_id}}"
+                                        >
+                                            <span class="fas fa-tasks mr-2"></span>
+                                            Task 
+                                        </a>
+                                    </span>
+                                    {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    <!-- Output-->
+                                    <!-- SSE stream -->
+                                    <span class="icon icon-sm">
+                                        <a title="Console Log Stream" class="dropdown-item" href="{{ url_for('.deploy_stream',deploy_id=deploy.id)}}">
+                                            <span class="fab fa-searchengin mr-0"></span>
+                                        </a>
+                                    </span>
+                                    <!-- Botón para abrir el modal -->
+                                    <span class="icon icon-sm">
+                                        <a
+                                            title="Output Deploy"
+                                            class="nav-link icon-notifications text-dark output-button"
+                                            data-task-id="{{deploy.task_id}}"
+                                            data-deploy-id="{{deploy.id}}"
+                                        >
+                                            <span class="far fa-file-code mr-0"></span>
+                                        </a>
+    
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Modal Unlock-->
+                        <div class="modal fade" id="UnlockModalCenter-{{deploy.id}}">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="UnlockModalLongTitle-{{deploy.id}}">
+                                            Unlock Deploy
+                                    {{deploy.name}}
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            class="close"
+                                            data-dismiss="modal"
+                                            aria-label="Close"
+                                        >
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            <strong>
+                                                Acquires a state lock to protect the state from being written
+                                        by multiple users at the same time. Please resolve the issue and try
+                                        again. You can disable locking with the "Unlock botton", but this is not
+                                        recommended:
+                                            </strong>
+                                        </p>
+                                        <p>
+                                            <strong>Are you sure?</strong>
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                                        <form action="{{ url_for('.unlock_deploy', deploy_id=deploy.id)}}">
+                                            <input type="submit" value="Unlock" class="btn btn-danger">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal Task-->
+                        <div class="modal fade" id="TaskModalCenter-{{deploy.task_id}}">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="TaskModalLongTitle-{{deploy.task_id}}">
+                                            Unlock Deploy
+                                    {{deploy.name}}
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            class="close"
+                                            data-dismiss="modal"
+                                            aria-label="Close"
+                                        >
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            <strong>
+                                                Force remove task locked {{deploy.task_id}}
+                                        to protect the state from being written by multiple users at the same time.
 
-                                <form action="{{ url_for('.unlock_deploy', deploy_id=deploy.id)}}">
-                                    <input type="submit" value="Unlock" class="btn btn-danger">
-                                </form>
+                                            </strong>
+                                        </p>
+                                        <p>
+                                            <strong>Are you sure?</strong>
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                                        <form action="{{ url_for('.unlock_task', task_id=deploy.task_id)}}">
+                                            <input type="submit" value="Unlock" class="btn btn-danger">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal Output-->
+                        <div
+                            class="modal fade"
+                            id="OutputModalCenter-{{deploy.id}}"
+                            tabindex="-1"
+                            aria-labelledby="modalLabel"
+                            aria-hidden="true"
+                        >
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header"></div>
+                                    <div class="modal-output" id="modal-output-{{deploy.id}}"></div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Exit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end Modal Output-->
+                        <!-- Modal Destroy-->
+                        <div class="modal fade" id="DestroyModalCenter-{{deploy.id}}">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="DestroyModalLongTitle-{{deploy.id}}">
+                                            Destroy Deploy
+                                    {{deploy.name}}
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            class="close"
+                                            data-dismiss="modal"
+                                            aria-label="Close"
+                                        >
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            <strong>This Deploy will be destroyed, could be regenerated later:</strong>
+                                        </p>
+                                        <p>
+                                            <strong>Are you sure?</strong>
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                                        <form action="{{ url_for('.destroy_deploy', deploy_id=deploy.id)}}">
+                                            <input type="submit" value="Destroy" class="btn btn-danger">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal Delete-->
+                        <div class="modal fade" id="DeleteModalCenter-{{deploy.id}}">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="DeleteModalLongTitle-{{deploy.id}}">
+                                            Delete Deploy
+                                    {{deploy.name}} Permanently
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            class="close"
+                                            data-dismiss="modal"
+                                            aria-label="Close"
+                                        >
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            <strong>
+                                                If you destroy before delete would be better.
+                                        This Deploy will be deleted permanently and cannot be recovered later:
+                                            </strong>
+                                        </p>
+                                        <p>
+                                            <strong>Are you sure?</strong>
+                                        </p>
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                                    <form action="{{ url_for('.delete_deploy', deploy_id=deploy.id)}}">
+                                        <input type="submit" value="Delete" class="btn btn-danger">
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Modal Output-->
-                <div class="modal fade bd-example-modal-lg" id="OutputModalCenter-{{deploy.id}}">
-                    <div class="modal-dialog modal-xl" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="OutputModalLongTitle-{{deploy.id}}">Output Deploy
-                                    {{deploy.name}}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                {% set stdout = task_log(deploy.task_id, token).result %}
-                                {% if stdout is iterable and (stdout is not string and stdout is not mapping) %}
-                                {%for i in stdout %}
-                                <p><strong>{{i}}</strong></p>
-                                {% endfor %}
-                                {% else %}
-                                <p><strong>{{stdout}}</strong></p>
-                                {% endif %}
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Modal Destroy-->
-                <div class="modal fade" id="DestroyModalCenter-{{deploy.id}}">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="DestroyModalLongTitle-{{deploy.id}}">Destroy Deploy
-                                    {{deploy.name}}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <p><strong>This Deploy will be destroyed, could be regenerated later:</strong></p>
-                                <p><strong>Are you sure? </strong></p>
-                                <p> <small>Now, young Skywalker, you will die?</small></p>
-                            </div>
-                            <div class="modal-footer">
-
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-
-                                <form action="{{ url_for('.destroy_deploy', deploy_id=deploy.id)}}">
-                                    <input type="submit" value="Destroy" class="btn btn-danger">
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Modal Delete-->
-                <div class="modal fade" id="DeleteModalCenter-{{deploy.id}}">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="DeleteModalLongTitle-{{deploy.id}}">Delete Deploy
-                                    {{deploy.name}} Permanently</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <p><strong>If you destroy before delete would be better.
-                                    This Deploy will be deleted permanently and cannot be recovered later:</strong>
-                                </p>
-                                <p><strong>Are you sure? </strong></p>
-                                <p> <small>Fear is the path to the dark side. Fear leads to anger;
-                                    anger leads to hate; hate leads to suffering. I sense much fear in you</small>
-                                </p>
-                            </div>
-                            <div class="modal-footer">
-
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-
-                                <form action="{{ url_for('.delete_deploy', deploy_id=deploy.id)}}">
-                                    <input type="submit" value="Delete" class="btn btn-danger">
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="card-footer px-3 border-0 d-flex align-items-center justify-content-between">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination mb-0">
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item active">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                    <li class="page-item">
-                    </li>
-                </ul>
-            </nav>
-            <div class="font-weight-bold small"></div>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="card-footer px-3 border-0 d-flex align-items-center justify-content-between">
+                <!-- Pagination -->
+                <nav>
+                    <ul class="pagination">
+                        <li class="page-item" id="previous-page">
+                            <a class="page-link" href="#">Previous</a>
+                        </li>
+                        <!-- Page numbers will be dynamically inserted here -->
+                        <li class="page-item" id="next-page">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="font-weight-bold small"></div>
+            </div>
         </div>
-    </div>
-
-    {% include 'includes/footer.html' %}
-
-</main>
-
-{% endblock content %}
-
-<!-- Specific Page JS goes HERE  -->
-{% block javascripts %}
-<script>
-    function search() {
-        const input = document.getElementById('search')
-        const filter = input.value.toLowerCase()
-        const table = document.getElementById('table')
-        const tr = [...table.getElementsByTagName('tr')]
-
-        tr.forEach((t) => {
-            const foundMatch = [...t.getElementsByTagName('td')].some((td) => {
-                return td.innerHTML.toLowerCase().indexOf(filter) > -1
+        {% include 'includes/footer.html' %}
+    </main>
+    {% endblock content %}
+    <!-- Specific Page JS goes HERE  -->
+    {% block javascripts %}
+    <script src="/static/assets/js/pagination_edit.js"></script>
+    <script src="/static/assets/js/copy_clipboard.js"></script>
+    <script src="/static/assets/js/download_tfvars.js"></script>
+    <script>
+    // Función para actualizar el estado de un deploy específico
+    function updateStatus(taskId) {
+        fetch('/status/' + taskId)
+            .then(response => response.json())
+            .then(data => {
+                var statusElement = document.getElementById('status-' + taskId);
+                if (statusElement) {
+                    statusElement.innerHTML = renderStatus(data.status);
+                }
             })
-            if (foundMatch) {
-                t.style.display = ''
-            } else {
-                t.style.display = 'none'
-            }
-        })
+            .catch(error => console.error('Error:', error));
     }
-</script>
-{% endblock javascripts %}
+
+    // Función para renderizar el estado en formato HTML
+    function renderStatus(status) {
+        switch (status) {
+            case "SUCCESS":
+                return '<span class="tag-style-success">' + status + '</span>';
+            case "FAILURE":
+                return '<span class="tag-style-failure">' + status + '</span>';
+            case "RETRY":
+                return '<span class="tag-style-retry">' + status + '</span>';
+            default:
+                return '<span class="tag-style-status">' + status + '</span>';
+        }
+    }
+
+    // Iniciar la actualización del estado para cada deploy
+    {% for deploy in deploys %}
+    updateStatus('{{ deploy.task_id }}')
+    setInterval(() => updateStatus('{{ deploy.task_id }}'), 5000);
+    {% endfor %}
+    </script>
+    <script>
+    // Función para abrir un modal y mostrar los outputs del deploy
+    function showModal(taskId, deployId) {
+        fetch('/output/' + taskId)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server response error: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Respuesta exitosa:', data); // Log exitoso
+                var modalBody = document.getElementById('modal-output-' + deployId);
+                if (modalBody) {
+                    modalBody.innerHTML = renderOutput(data);
+                }
+
+                // Inicializar y mostrar el modal
+                var modalElement = document.getElementById('OutputModalCenter-' + deployId);
+                if (modalElement) {
+                    var myModal = new bootstrap.Modal(modalElement, {
+                        keyboard: true
+                    });
+                    myModal.show();
+                }
+            })
+            .catch(error => {
+                console.error('Fetch data error:', error);
+                console.log('Fetch data endpoint taskId:', taskId);
+            });
+    }
+
+    // Función para renderizar los outputs en formato HTML
+    function renderOutput(data) {
+        if (Array.isArray(data)) {
+            return data.map(line => `<p><span class="${getClassForLine(line)}"><strong>${line}</strong></span></p>`).join('');
+        } else {
+            return `<p><strong>${data}</strong></p>`;
+        }
+    }
+
+    // Función auxiliar para determinar la clase CSS según el contenido de la línea
+    function getClassForLine(line) {
+        if (/^\s*\+/.test(line)) return 'plus';
+        if (/^\s*-(?!\-)/.test(line)) return 'minus'; // Modificado para un solo guion '-'
+        if (/^\s*~/.test(line)) return 'tilde';
+            return 'others';
+    }
+    // Asignar el evento click a los botones para abrir el modal
+    document.querySelectorAll('.output-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const taskId = button.getAttribute('data-task-id');
+            const deployId = button.getAttribute('data-deploy-id');
+            showModal(taskId, deployId);
+        });
+    });
+    </script>
+
+    {% endblock javascripts %}

@@ -16,7 +16,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
                 <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
-                <li class="breadcrumb-item"><a href="/deploys-list.html">Deploy</a></li>
+                <li class="breadcrumb-item"><a href="/deploys-list">Deploy</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Edit</li>
             </ol>
         </nav>
@@ -38,10 +38,11 @@
                         <div class="col-lg-4 col-sm-6">
                             <!-- Form -->
                             <div class="col-md-12 col-md-offset-1">
-                                <h3>{{deploy.name}}</h3>
+                                <h1>{{deploy.name}}</h1>
                                 <form class="" method="post">
                                     <div class="form-group">
-                                        {{ render_field(form.start_time, autocomplete="off", class='form-control', value=deploy.start_time)
+                                        {{ render_field(form.start_time, autocomplete="off", class='form-control',
+                                        value=deploy.start_time)
                                         }}
                                     </div>
 
@@ -49,6 +50,22 @@
                                         {{ render_field(form.destroy_time, autocomplete="off", class='form-control',
                                         value=deploy.destroy_time) }}
                                     </div>
+                                    <div class="form-group">
+                                        {{ render_field(form.branch, autocomplete="off", class='form-control',
+                                        value=deploy.stack_branch) }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ render_field(form.project_path,
+                                        autocomplete="off", class='form-control',
+                                        value=deploy.project_path) }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ render_field(form.tfvar_file, autocomplete="off", class='form-control',
+                                        value=deploy.tfvar_file) }}
+                                    </div>
+                                    {% if deploy.tfvar_file == "" %}
+                                    <div class="border-top my-4"></div>
+                                    <h2>Variables</h2>
                                     <div class="border-top my-4"></div>
                                     {% for key, value in data_json.items()|sort %}
                                     <div class="form-group">
@@ -58,14 +75,25 @@
                                         {% if "passw" in key %}
                                         <input type="password" value="{{ value }}" name={{ key }} class='form-control'
                                             placeholder={{key}} autocomplete="off">
-                                        {% else %}
+                                        {% elif value == "true" or value == "false" %}
+                                        <select name="{{ key }}" class='form-control'>
+                                            <option value="true" {% if value=="true" %} selected {% endif %}>True
+                                            </option>
+                                            <option value="false" {% if value=="false" %} selected {% endif %}>False
+                                            </option>
+                                        </select>
+                                        {% elif value is iterable and not value is string %}
+                                        <textarea id="json{{ loop.index }}" name={{ key }} class='form-control' rows="6"
+                                            required placeholder={{key}}
+                                            autocomplete="off">{{ value | tojson | safe }}</textarea>
+                                        {% elif value is string %}
                                         <input type="text" value="{{ value }}" name={{ key }} class='form-control'
                                             placeholder={{key}} autocomplete="off">
+                                        {% else %}
                                         {% endif %}
                                     </div>
                                     {% endfor %}
-
-                                <!-- Add custom variables -->
+                                    <!-- Add custom variables -->
                                     <div class="border-top my-4"></div>
                                     <div class="row">
                                         <div class="col-lg-12">
@@ -73,27 +101,17 @@
                                             </div>
 
                                             <div id="newRow"></div>
-                                            <button id="addRow" type="button" class="btn btn-info btn-sm">Add Variable</button>
+                                            <button id="addRow" type="button" class="btn btn-info btn-sm">Add
+                                                Variable</button>
                                         </div>
                                     </div>
                                     <div class="border-top my-4"></div>
-                                <!-- End Add custom variables -->
-                                    {% if deploy.action == "Plan"%}
-                                    <button type="submit" class="btn btn-success" name="button" value=plan
+                                    <!-- End Add custom variables -->
+                                    {% endif %}
+                                    <button type="submit" class="btn w-100 btn-success" name="button" value=plan
                                         action="{{url_for('.list_deploys')}}">
                                         Plan
                                     </button>
-                                    {% else %}
-                                    <button type="submit" class="btn btn-success" name="button" value=dryrun
-                                        action="{{url_for('.list_deploys')}}">
-                                        DryRun 
-                                    </button>
-                                    {% endif %}
-                                    <button type="submit" class="btn btn-primary" name="button" value=deploy
-                                        action="{{url_for('.list_deploys')}}">
-                                        Deploy
-                                    </button>
-
                                 </form>
                             </div>
 
@@ -139,4 +157,17 @@
         $(this).closest('#inputFormRow').remove();
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var textareas = document.querySelectorAll('textarea');
+        textareas.forEach(function (textarea) {
+            try {
+                var obj = JSON.parse(textarea.value);
+                textarea.value = JSON.stringify(obj, null, 4);
+            } catch (e) {
+            }
+        });
+    });
+</script>
+
 {% endblock javascripts %}
